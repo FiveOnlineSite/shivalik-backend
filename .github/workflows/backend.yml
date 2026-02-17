@@ -24,7 +24,7 @@ jobs:
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
 
-      # Install packages & restart server
+      # Install packages and restart backend
       - name: Install & Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -34,4 +34,5 @@ jobs:
           script: |
             cd /home/shivalikventures/nodebackend
             npm install --production
-            pm2 restart backend || pm2 start server.js --name backend
+            npx pm2 restart backend || npx pm2 start server.js --name backend
+            npx pm2 save --force
