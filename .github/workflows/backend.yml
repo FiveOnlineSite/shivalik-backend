@@ -17,14 +17,14 @@ jobs:
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avzr --delete
+          switches: -avzr
           path: ./
           remote_path: /home/shivalikventures/nodebackend
           remote_host: ${{ secrets.VPS_HOST }}
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
 
-      # Install packages and restart backend
+      # Install packages & restart backend
       - name: Install & Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
