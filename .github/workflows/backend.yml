@@ -18,7 +18,7 @@ jobs:
         uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avzr --delete
-          path: backend/     # folder containing server.js & package.json
+          path: ./     # folder containing server.js & package.json
           remote_path: /home/shivalikventures/nodebackend
           remote_host: ${{ secrets.VPS_HOST }}
           remote_user: ${{ secrets.VPS_USER }}
