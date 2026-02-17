@@ -19,7 +19,7 @@ jobs:
         with:
           switches: -avzr
           path: ./
-          remote_path: /home/shivalikventures/nodebackend
+          remote_path: /home/shivalikventures/shivalikbackend
           remote_host: ${{ secrets.VPS_HOST }}
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
@@ -32,7 +32,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           script: |
-            cd /home/shivalikventures/nodebackend
+            cd /home/shivalikventures/shivalikbackend
             npm install --production
             npx pm2 restart backend || npx pm2 start server.js --name backend
             npx pm2 save --force
