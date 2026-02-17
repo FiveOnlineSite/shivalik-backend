@@ -3,7 +3,7 @@ name: Deploy Node Backend
 on:
   push:
     branches:
-      - main
+      - main   # change to master if needed
 
 jobs:
   deploy-backend:
@@ -13,19 +13,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Upload backend code
+      # Upload backend files
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avzr --delete
-          path: backend/     # folder where backend code lives
+          path: backend/     # folder containing server.js & package.json
           remote_path: /home/shivalikventures/nodebackend
           remote_host: ${{ secrets.VPS_HOST }}
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
 
-      # Install packages & restart app
-      - name: Install & Restart
+      # Install dependencies and restart node app
+      - name: Install & Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
