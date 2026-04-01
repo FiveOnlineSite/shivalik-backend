@@ -1,0 +1,35 @@
+{
+  "name": "shivalik-backend",
+  "version": "1.0.0",
+  "description": "",
+  "node": "npm start",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon",
+    "build": "npm install"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.888.0",
+    "@eslint/js": "^9.35.0",
+    "aws-sdk": "^2.1692.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "eslint": "^9.35.0",
+    "eslint-plugin-react": "^7.37.5",
+    "express": "^5.1.0",
+    "fs-extra": "^11.3.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.19.0",
+    "mongoose": "^8.18.1",
+    "multer": "^2.0.2",
+    "multer-s3": "^3.0.1",
+    "nodemailer": "^7.0.6",
+    "nodemon": "^3.1.10",
+    "sitemap": "^9.0.0"
+  }
+}
