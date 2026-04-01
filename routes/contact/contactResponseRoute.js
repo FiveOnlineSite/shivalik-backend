@@ -25,6 +25,9 @@ tls: {
 
     const { name, email, phone, message, page } = req.body;
 
+    console.log("Password:", process.env.SMTP_PASS); // Debugging line to check if password is loaded
+    console.log("User:", process.env.SMTP_USER); // Debugging line to check if user is loaded
+
     const mailOptions = {
       from: `"Shivalik Contact" <${process.env.SMTP_USER}>`,
       to: "mansi.fiveonline@gmail.com",
@@ -53,6 +56,7 @@ tls: {
     });
   }
 });
+
 
 
 route.get("/", ContactResponseController.getContacts )
