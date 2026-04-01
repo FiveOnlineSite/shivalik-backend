@@ -28,7 +28,7 @@ tls: {
     const mailOptions = {
       from: `"Shivalik Contact" <${process.env.SMTP_USER}>`,
       to: "mansi.fiveonline@gmail.com",
-      subject: "Shivalik Contact Form Submission",
+      subject: "Shivalik Contact Form Submission.",
       html: `
         <h3>Shivalik Contact Request</h3>
         <p><strong>Name:</strong> ${name}</p>
