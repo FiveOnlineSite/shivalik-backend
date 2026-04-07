@@ -6,7 +6,7 @@ const ContactResponseController = require("../../controllers/contact/contactResp
 
 route.post("/", async (req, res) => {
   try {
-    // Save contact in DB
+    // Save contact in DB -
     const newContact = await ContactResponseController.createContact(req, res, true);
 
     // Configure SMTP transporter
