@@ -1,3 +1,5 @@
+//Contact Content Route
+
 const ContactContentController = require("../../controllers/contact/contactContentController");
 const express = require("express");
 const adminMiddleware = require("../../middleware/adminMiddleware");
