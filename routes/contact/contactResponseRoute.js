@@ -2,6 +2,7 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
+//updated env file
 const route = express.Router();
 const ContactResponseController = require("../../controllers/contact/contactResponseController");
 
