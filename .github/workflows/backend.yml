@@ -13,18 +13,28 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Upload backend files to VPS
+      # 🚨 IMPORTANT: Clean remote folder before deploy
+      - name: Clean remote directory
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            rm -rf /home/shivalikventures/shivalikbackend/*
+      
+      # ✅ Deploy fresh code
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avzr
+          switches: -avzr --delete
           path: ./
           remote_path: /home/shivalikventures/shivalikbackend
           remote_host: ${{ secrets.VPS_HOST }}
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
 
-      # Install packages & restart backend
+      # ✅ Install + FORCE restart PM2
       - name: Install & Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -33,6 +43,13 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /home/shivalikventures/shivalikbackend
+            
             npm install --production
-            npx pm2 restart backend || npx pm2 start server.js --name backend
+
+            # 🔥 Kill old process completely
+            npx pm2 delete backend || true
+
+            # 🔥 Start fresh (VERY IMPORTANT)
+            npx pm2 start server.js --name backend
+
             npx pm2 save --force
