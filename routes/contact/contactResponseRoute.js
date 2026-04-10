@@ -13,12 +13,14 @@ route.post("/", async (req, res) => {
 
     // ✅ Gmail transporter (use App Password)
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS, // App Password (not Gmail password)
-      },
-    });
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true for 465
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
     const { name, email, phone, message, page } = req.body;
 
