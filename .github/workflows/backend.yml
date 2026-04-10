@@ -13,7 +13,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 🚀 Deploy files (safe - no delete)
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -24,8 +23,7 @@ jobs:
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
 
-      # 🔥 Install & FORCE refresh backend (best approach)
-      - name: Install & Restart Backend (Fresh)
+      - name: Install & Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -37,17 +35,15 @@ jobs:
             echo "📦 Installing dependencies..."
             npm install --production
 
-            echo "🛑 Removing old PM2 process (only process, not files)..."
+            echo "🔍 Checking if NEW code exists..."
+            grep -r "testing" . || echo "❌ NEW CODE NOT FOUND"
+
+            echo "🛑 Restarting backend..."
             npx pm2 delete backend || true
-
-            echo "🚀 Starting fresh backend..."
             npx pm2 start server.js --name backend
-
-            echo "💾 Saving PM2 config..."
-            npx pm2 save --force
 
             echo "📊 PM2 Status:"
             npx pm2 list
 
-            echo "📜 Latest Logs:"
+            echo "📜 Logs:"
             npx pm2 logs backend --lines 20
