@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout latest code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Deploy code (safe, keeps .env)
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -25,34 +23,31 @@ jobs:
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
 
-      # 3. Force clean restart (IMPORTANT)
-      - name: Install & Force Restart Backend
+      - name: Force Kill & Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           script: |
-            echo "===== DEPLOY START ====="
+            echo "===== FORCE CLEAN START ====="
 
-            cd /home/shivalikventures/shivalikbackend || exit
+            echo "💀 Kill ALL node processes (free port 8000)"
+            pkill -9 node || true
 
-            echo "📦 Installing dependencies..."
+            echo "📂 Go to project"
+            cd /home/shivalikventures/shivalikbackend
+
+            echo "📦 Install dependencies"
             npm install --production
 
-            echo "💀 Killing all old Node processes..."
-            pkill node || true
+            echo "🧹 Reset PM2"
+            npx pm2 kill || true
 
-            echo "🧹 Clearing PM2..."
-            npx pm2 delete all || true
-
-            echo "🚀 Starting backend (correct file)..."
+            echo "🚀 Start backend on port 8000"
             npx pm2 start server.js --name backend
 
-            echo "💾 Saving PM2 config..."
+            echo "💾 Save PM2"
             npx pm2 save --force
 
-            echo "📊 PM2 Status:"
-            npx pm2 list
-
-            echo "===== DEPLOY COMPLETE ====="
+            echo "===== DONE ====="
