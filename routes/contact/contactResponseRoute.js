@@ -28,7 +28,7 @@ route.post("/", async (req, res) => {
 
     const mailOptions = {
       from: "Shivalik Contact",
-      to: "mansi.fiveonline@gmail.com",
+      to: "yatrik@fiveonline.in",
       subject: "Shivalik Contact Form Submission",
       html: `
         <h3>Shivalik Contact Request</h3>
