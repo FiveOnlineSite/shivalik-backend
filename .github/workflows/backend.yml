@@ -1,69 +1,44 @@
-name: Deploy Node Backend
+name: Deploy to cPanel via FTP
 
 on:
   push:
     branches:
-      - main
+      - main   # change if needed
 
 jobs:
-  deploy-backend:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      # 1. Get latest code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # 🚀 Step 1: Deploy files
-      - name: Deploy Backend via RSYNC
-        uses: burnett01/rsync-deployments@7.0.1
+      # 2. Setup Node
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          switches: -avzr
-          path: ./
-          remote_path: /home/shivalikventures/shivalikbackend
-          remote_host: ${{ secrets.VPS_HOST }}
-          remote_user: ${{ secrets.VPS_USER }}
-          remote_key: ${{ secrets.VPS_KEY }}
-          remote_port: 22
+          node-version: 20
 
-      # 🔥 Step 2: Force clean restart + fix everything
-      - name: Install & Force Restart Backend
-        uses: appleboy/ssh-action@v1.0.3
+      # 3. Install dependencies
+      - name: Install deps
+        run: npm ci
+
+      # 4. Build project
+      - name: Build
+        run: npm run build
+
+      # 5. Prepare export (IMPORTANT for cPanel)
+      - name: Export static files
+        run: npm run export
+
+      # 6. Deploy via FTP (clean upload)
+      - name: Deploy to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
-          port: 22
-          script: |
-            echo "===== START DEPLOY ====="
-
-            cd /home/shivalikventures/shivalikbackend || exit
-
-            echo "📦 Installing dependencies..."
-            npm install --production
-
-            echo "🛑 Killing ALL node processes (fix old backend issue)..."
-            pkill node || true
-
-            echo "🧹 Cleaning PM2..."
-            npx pm2 delete all || true
-
-            echo "🚀 Starting correct backend..."
-            npx pm2 start /home/shivalikventures/shivalikbackend/server.js --name backend
-
-            echo "💾 Saving PM2..."
-            npx pm2 save --force
-
-            echo "===== DEBUG INFO ====="
-            echo "🔍 Running process on port 8000:"
-            lsof -i :8000 || netstat -tulpn | grep 8000 || true
-
-            echo "🔍 Verify latest code:"
-            grep -r "testing" . || echo "⚠️ NEW CODE NOT FOUND"
-
-            echo "📊 PM2 Status:"
-            npx pm2 list
-
-            echo "📜 Logs:"
-            npx pm2 logs backend --lines 20
-
-            echo "===== DEPLOY COMPLETE ====="
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/
+          local-dir: ./out/
+          dangerous-clean-slate: true
