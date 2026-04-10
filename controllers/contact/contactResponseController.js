@@ -1,4 +1,5 @@
 const ContactResponseModel = require("../../models/contact/contactResponseModel");
+const nodemailer = require("nodemailer"); // ✅ ADDED
 
 const createContact = async (req, res, skipResponse = false) => {
   try {
@@ -6,35 +7,69 @@ const createContact = async (req, res, skipResponse = false) => {
 
     const newContact = new ContactResponseModel({
       name,
-      email,  
+      email,
       phone,
       page,
       message,
     });
 
+    // ✅ FIX: Always save first
+    await newContact.save();
+
+    // ✅ ADD: Gmail email sending
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false, // ✅ Fix cPanel SSL issue
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"Shivalik Contact" <${process.env.GMAIL_USER}>`,
+        to: process.env.GMAIL_USER, // admin email
+        subject: "Shivalik Contact Form Submission",
+        html: `
+          <h3>Shivalik Contact Request</h3>
+          <p><strong>Name:</strong> ${name || "-"}</p>
+          <p><strong>Email:</strong> ${email || "-"}</p>
+          <p><strong>Phone:</strong> ${phone || "-"}</p>
+          <p><strong>Message:</strong> ${message || "-"}</p>
+          <p><strong>Page:</strong> ${page || "-"}</p>
+        `,
+      });
+
+      console.log("Email sent successfully");
+
+    } catch (mailError) {
+      console.error("EMAIL ERROR:", mailError.message);
+      // ❗ Don't fail API if email fails
+    }
+
+    // ✅ Existing behavior preserved
     if (!skipResponse) {
       return res.status(200).json({
         message: "Added Contact content successfully.",
         newContact,
       });
     }
-    
-    await newContact.save();
 
-    return newContact; // return saved document if skipping response
+    return newContact;
 
+  } catch (error) {
+    console.error("CREATE CONTACT ERROR:", error);
 
-  }catch (error) {
-  console.error("CREATE CONTACT ERROR:", error);
-
-  return res.status(500).json({
-    success: false,
-    message: "Failed to save contact",
-    error: error.message,
-  });
-}
+    return res.status(500).json({
+      success: false,
+      message: "Failed to save contact",
+      error: error.message,
+    });
+  }
 };
-
 
 const getContacts = async (req, res) => {
   try {
