@@ -1,6 +1,5 @@
 const ContactResponseModel = require("../../models/contact/contactResponseModel");
-const nodemailer = require("nodemailer"); // ✅ ADDED
-
+const nodemailer = require("nodemailer"); 
 const createContact = async (req, res, skipResponse = false) => {
   try {
     const { name, email, phone, message, page } = req.body;
@@ -13,10 +12,6 @@ const createContact = async (req, res, skipResponse = false) => {
       message,
     });
 
-    // ✅ FIX: Always save first
-    await newContact.save();
-
-    // ✅ ADD: Gmail email sending
     try {
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -25,7 +20,7 @@ const createContact = async (req, res, skipResponse = false) => {
           pass: process.env.SMTP_PASS,
         },
         tls: {
-          rejectUnauthorized: false, // ✅ Fix cPanel SSL issue
+          rejectUnauthorized: false, 
         },
       });
 
@@ -50,6 +45,8 @@ const createContact = async (req, res, skipResponse = false) => {
       // ❗ Don't fail API if email fails
     }
 
+    await newContact.save();
+    
     // ✅ Existing behavior preserved
     if (!skipResponse) {
       return res.status(200).json({
