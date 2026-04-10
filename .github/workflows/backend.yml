@@ -13,6 +13,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 🚀 Deploy files to correct folder
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -23,6 +24,7 @@ jobs:
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
 
+      # 🔥 Install & start correct backend (FIXED PATH)
       - name: Install & Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -35,15 +37,17 @@ jobs:
             echo "📦 Installing dependencies..."
             npm install --production
 
-            echo "🔍 Checking if NEW code exists..."
-            grep -r "testing" . || echo "❌ NEW CODE NOT FOUND"
-
-            echo "🛑 Restarting backend..."
+            echo "🛑 Removing old wrong PM2 process..."
             npx pm2 delete backend || true
-            npx pm2 start server.js --name backend
+
+            echo "🚀 Starting backend from CORRECT PATH..."
+            npx pm2 start /home/shivalikventures/shivalikbackend/server.js --name backend
+
+            echo "💾 Saving PM2 config..."
+            npx pm2 save --force
 
             echo "📊 PM2 Status:"
             npx pm2 list
 
-            echo "📜 Logs:"
+            echo "📜 Latest Logs:"
             npx pm2 logs backend --lines 20
