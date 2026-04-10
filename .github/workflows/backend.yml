@@ -13,7 +13,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 🚀 Deploy files
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -25,8 +24,7 @@ jobs:
           remote_key: ${{ secrets.VPS_KEY }}
           remote_port: 22
 
-      # 🔥 FULL DEBUG + FORCE FIX
-      - name: Debug + Restart Backend
+      - name: Fix & Restart Backend (FORCE CORRECT PATH)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -34,38 +32,28 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           port: 22
           script: |
-            echo "===== CONNECTED TO SERVER ====="
+            echo "===== START FIX ====="
 
+            # Go to correct project
             cd /home/shivalikventures/shivalikbackend || exit
 
-            echo "===== CURRENT FILE CHECK ====="
-            grep -r "testing" . || echo "❌ NEW CODE NOT FOUND"
-
-            echo "===== DEPLOY TIMESTAMP ====="
-            date > deploy-check.txt
-            cat deploy-check.txt
-
-            echo "===== RUNNING NODE PROCESSES ====="
-            ps aux | grep node
-
-            echo "===== PM2 LIST ====="
-            npx pm2 list || true
-
-            echo "===== KILL ALL OLD NODE PROCESSES ====="
-            pkill node || true
-
-            echo "===== INSTALL DEPENDENCIES ====="
+            echo "📦 Installing dependencies..."
             npm install --production
 
-            echo "===== START CLEAN BACKEND ====="
+            echo "🛑 Remove WRONG PM2 app..."
             npx pm2 delete backend || true
+
+            echo "💀 Kill ALL node processes (important)"
+            pkill node || true
+
+            echo "🚀 Start CORRECT backend"
             npx pm2 start /home/shivalikventures/shivalikbackend/server.js --name backend
 
-            echo "===== SAVE PM2 ====="
+            echo "💾 Save PM2"
             npx pm2 save --force
 
-            echo "===== FINAL PM2 STATUS ====="
+            echo "📊 PM2 STATUS"
             npx pm2 list
 
-            echo "===== FINAL LOGS ====="
+            echo "📜 LOGS"
             npx pm2 logs backend --lines 20
