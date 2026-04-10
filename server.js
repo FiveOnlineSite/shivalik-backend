@@ -48,6 +48,14 @@ app.get("/debug-env", (req, res) => {
   });
 });
 
+//added for debugging env variables (remove in production))
+app.get("/debug-env", (req, res) => {
+  res.json({
+    smtpUser: process.env.SMTP_USER || "missing",
+    smtpPass: process.env.SMTP_PASS ? "exists" : "missing",
+  });
+});
+
 app.use("/api/auth", Route.authRoute);
 app.use("/api/home-banner", Route.homeBannerRoute);
 app.use("/api/counter", Route.counterRoute);

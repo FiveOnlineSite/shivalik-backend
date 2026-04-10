@@ -27,7 +27,7 @@ route.post("/", async (req, res) => {
     console.log("SMTP PASS:", process.env.SMTP_PASS ? "Loaded" : "Missing");
 
     const mailOptions = {
-      from: "Shivalik Contact" <${process.env.SMTP_USER}>,
+      from: "Shivalik Contact",
       to: "mansi.fiveonline@gmail.com",
       subject: "Shivalik Contact Form Submission",
       html: `
