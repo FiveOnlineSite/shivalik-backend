@@ -1,44 +1,38 @@
-name: Deploy to cPanel via FTP
+name: Deploy Node Backend
 
 on:
   push:
     branches:
-      - main   # change if needed
+      - main
 
 jobs:
-  deploy:
+  deploy-backend:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Get latest code
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Setup Node
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      # Upload backend files to VPS
+      - name: Deploy Backend via RSYNC
+        uses: burnett01/rsync-deployments@7.0.1
         with:
-          node-version: 20
+          switches: -avzr
+          path: ./
+          remote_path: /home/shivalikventures/shivalikbackend
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USER }}
+          remote_key: ${{ secrets.VPS_KEY }}
 
-      # 3. Install dependencies
-      - name: Install deps
-        run: npm ci
-
-      # 4. Build project
-      - name: Build
-        run: npm run build
-
-      # 5. Prepare export (IMPORTANT for cPanel)
-      - name: Export static files
-        run: npm run export
-
-      # 6. Deploy via FTP (clean upload)
-      - name: Deploy to cPanel
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      # Install packages & restart backend
+      - name: Install & Restart Backend
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/
-          local-dir: ./out/
-          dangerous-clean-slate: true
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            cd /home/shivalikventures/shivalikbackend
+            npm install --production
+            npx pm2 restart backend || npx pm2 start server.js --name backend
+            npx pm2 save --force
