@@ -13,7 +13,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Upload backend files to VPS
+      # 🚀 Deploy without deleting server files
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -24,7 +24,7 @@ jobs:
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
 
-      # Install packages & restart backend
+      # 🔥 Restart safely
       - name: Install & Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -33,6 +33,14 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /home/shivalikventures/shivalikbackend
+
+            echo "Installing dependencies..."
             npm install --production
+
+            echo "Restarting PM2..."
             npx pm2 restart backend || npx pm2 start server.js --name backend
+
             npx pm2 save --force
+
+            echo "PM2 Status:"
+            npx pm2 list
