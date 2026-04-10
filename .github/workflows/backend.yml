@@ -13,6 +13,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 🚀 Step 1: Deploy files
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -24,7 +25,8 @@ jobs:
           remote_key: ${{ secrets.VPS_KEY }}
           remote_port: 22
 
-      - name: Fix & Restart Backend (FORCE CORRECT PATH)
+      # 🔥 Step 2: Force clean restart + fix everything
+      - name: Install & Force Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -32,28 +34,36 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           port: 22
           script: |
-            echo "===== START FIX ====="
+            echo "===== START DEPLOY ====="
 
-            # Go to correct project
             cd /home/shivalikventures/shivalikbackend || exit
 
             echo "📦 Installing dependencies..."
             npm install --production
 
-            echo "🛑 Remove WRONG PM2 app..."
-            npx pm2 delete backend || true
-
-            echo "💀 Kill ALL node processes (important)"
+            echo "🛑 Killing ALL node processes (fix old backend issue)..."
             pkill node || true
 
-            echo "🚀 Start CORRECT backend"
+            echo "🧹 Cleaning PM2..."
+            npx pm2 delete all || true
+
+            echo "🚀 Starting correct backend..."
             npx pm2 start /home/shivalikventures/shivalikbackend/server.js --name backend
 
-            echo "💾 Save PM2"
+            echo "💾 Saving PM2..."
             npx pm2 save --force
 
-            echo "📊 PM2 STATUS"
+            echo "===== DEBUG INFO ====="
+            echo "🔍 Running process on port 8000:"
+            lsof -i :8000 || netstat -tulpn | grep 8000 || true
+
+            echo "🔍 Verify latest code:"
+            grep -r "testing" . || echo "⚠️ NEW CODE NOT FOUND"
+
+            echo "📊 PM2 Status:"
             npx pm2 list
 
-            echo "📜 LOGS"
+            echo "📜 Logs:"
             npx pm2 logs backend --lines 20
+
+            echo "===== DEPLOY COMPLETE ====="
