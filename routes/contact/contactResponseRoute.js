@@ -84,7 +84,7 @@ route.post("/", async (req, res) => {
     }
 
     return res.status(500).json({
-      message: "Failed to save contact or send email testing",
+      message: "Failed to save contact or send email",
       error: err.message,
     });
   }
