@@ -41,6 +41,13 @@ app.get("/api", (req, res) => {
   res.send("This is backend");
 });
 
+app.get("/debug-env", (req, res) => {
+  res.json({
+    smtpUser: process.env.SMTP_USER || "missing",
+    smtpPass: process.env.SMTP_PASS ? "exists" : "missing",
+  });
+});
+
 //added for debugging env variables (remove in production))
 app.get("/debug-env", (req, res) => {
   res.json({

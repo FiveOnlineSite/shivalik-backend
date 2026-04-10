@@ -2,6 +2,7 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
+//updated env file
 const route = express.Router();
 const ContactResponseController = require("../../controllers/contact/contactResponseController");
 
@@ -21,7 +22,7 @@ route.post("/", async (req, res) => {
 
     const { name, email, phone, message, page } = req.body;
 
-    // Optional debug (remove in production)))
+    // Optional debug (remove in production)
     console.log("SMTP USER:", process.env.SMTP_USER ? "Loaded" : "Missing");
     console.log("SMTP PASS:", process.env.SMTP_PASS ? "Loaded" : "Missing");
 
