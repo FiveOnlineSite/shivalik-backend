@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 connectDb();
 
 app.get("/api", (req, res) => {
-  res.send("This is backend");
+  res.send("This is new version");
 });
 
 app.get("/debug-env", (req, res) => {
