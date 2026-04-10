@@ -13,28 +13,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 🚨 IMPORTANT: Clean remote folder before deploy
-      - name: Clean remote directory
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
-          script: |
-            rm -rf /home/shivalikventures/shivalikbackend/*
-      
-      # ✅ Deploy fresh code
+      # 🚀 Deploy (but DO NOT touch .env)
       - name: Deploy Backend via RSYNC
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avzr --delete
+          switches: -avzr --delete --exclude=".env"
           path: ./
           remote_path: /home/shivalikventures/shivalikbackend
           remote_host: ${{ secrets.VPS_HOST }}
           remote_user: ${{ secrets.VPS_USER }}
           remote_key: ${{ secrets.VPS_KEY }}
 
-      # ✅ Install + FORCE restart PM2
+      # 🔥 Install & FORCE fresh restart
       - name: Install & Restart Backend
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -43,13 +33,18 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /home/shivalikventures/shivalikbackend
-            
+
+            echo "📦 Installing dependencies..."
             npm install --production
 
-            # 🔥 Kill old process completely
+            echo "🛑 Removing old PM2 process..."
             npx pm2 delete backend || true
 
-            # 🔥 Start fresh (VERY IMPORTANT)
+            echo "🚀 Starting fresh backend..."
             npx pm2 start server.js --name backend
 
+            echo "💾 Saving PM2 config..."
             npx pm2 save --force
+
+            echo "📊 PM2 Status:"
+            npx pm2 list
