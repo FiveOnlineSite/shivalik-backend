@@ -33,7 +33,7 @@ const createContact = async (req, res) => {
     await transporter.sendMail({
       from: `"Shivalik Contact" <${process.env.SMTP_USER}>`,
       to: process.env.ADMIN_EMAIL || process.env.SMTP_USER,
-      cc: process.env.CC_EMAIL || "",
+      // cc: process.env.CC_EMAIL || "",
       replyTo: email,
       subject: "Shivalik Contact Form Submission",
       html: `
