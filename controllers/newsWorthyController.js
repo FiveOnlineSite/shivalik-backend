@@ -21,6 +21,11 @@ const createNewsWorthyMention = async (req, res) => {
         return res.status(400).json({ message: "Alt text is required." });
       }
 
+      console.log("ENV CLOUDFRONT_BASE_URL:", process.env.CLOUDFRONT_BASE_URL);
+console.log("file.key:", file.key);
+console.log("CloudFront URL:", getCloudFrontUrl(file.key));
+
+
       imageData.push({
         filename: path.basename(file.key),
         filepath: getCloudFrontUrl(file.key),

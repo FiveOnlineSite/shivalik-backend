@@ -35,6 +35,8 @@ const createBlog = async (req, res) => {
       return res.status(400).json({ message: "Unsupported image type." });
     }
 
+    
+
     const imageData = {
       filename: path.basename(file.key),
       filepath: getCloudFrontUrl(file.key),
@@ -238,11 +240,10 @@ const deleteBlog = async (req, res) => {
           blog: _id,
         });
     const updateResult = await BlogsModel.updateMany(
-      { order: { $gt: deletedSequence } },
-      { $inc: { order: -1 } }
-    );
-
-    console.log(`Updated ${updateResult.modifiedCount} Blog's order.`);
+  { sequence: { $gt: deletedSequence } },
+  { $inc: { sequence: -1 } }
+);
+    console.log(`Updated ${updateResult.modifiedCount} Blog's sequence.`);
 
     return res.status(200).json({
       message: "Blog deleted successfully.",
