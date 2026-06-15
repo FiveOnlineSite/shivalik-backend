@@ -2,6 +2,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const ProjectsModel = require("../../models/projects/projectsModel");
 const GalleriesModel = require("../../models/projectDetails/galleryModel");
+const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const createGallery = async (req, res) => {
   try {
@@ -25,7 +26,7 @@ const createGallery = async (req, res) => {
 
       imageData = {
                               filename: path.basename(file.key), // "1756968423495-2.jpg"
-                              filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "images/banners/..."
+                              filepath: getCloudFrontUrl(file.key) // keep "images/banners/..."
                              }
     }
 
@@ -69,7 +70,7 @@ const updateGallery = async (req, res) => {
       Gallery.image = [
        {
                                filename: path.basename(file.key), // "1756968423495-2.jpg"
-                               filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "images/banners/..."
+                               filepath: getCloudFrontUrl(file.key) // keep "images/banners/..."
                               }
       ];
     }

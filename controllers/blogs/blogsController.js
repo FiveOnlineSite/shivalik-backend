@@ -1,7 +1,7 @@
 const BlogsModel = require("../../models/blogs/blogsModel");
 const path = require("path")
 const BlogsFaqModel = require("../../models/blogs/blogsFaqModel")
-
+const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const slugify = (str = "") =>
   str
@@ -37,7 +37,7 @@ const createBlog = async (req, res) => {
 
     const imageData = {
       filename: path.basename(file.key),
-      filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+      filepath: getCloudFrontUrl(file.key),
     };
 
     const newBlog = new BlogsModel({
@@ -88,7 +88,7 @@ const updateBlog = async (req, res) => {
       existingBlog.image = [
         {
           filename: path.basename(file.key),
-          filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+          filepath: getCloudFrontUrl(file.key),
         },
       ];
     }

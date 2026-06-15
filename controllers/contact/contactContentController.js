@@ -1,6 +1,7 @@
 const ContactContentModel = require("../../models/contact/contactContentModel");
 const mongoose = require("mongoose");
 const path = require("path");
+const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const createContactContent = async (req, res) => {
   try {
@@ -47,7 +48,7 @@ const createContactContent = async (req, res) => {
         icon: [
          {
            filename: path.basename(file.key),
-           filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "images/banners/..."
+           filepath: getCloudFrontUrl(file.key) // keep "images/banners/..."
           }
         ],
         alt: socialMedia.alt,
@@ -130,7 +131,7 @@ const updateContactContent = async (req, res) => {
         iconData = [
           {
             filename: path.basename(file.key),
-            filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+            filepath: getCloudFrontUrl(file.key),
           },
         ];
       }

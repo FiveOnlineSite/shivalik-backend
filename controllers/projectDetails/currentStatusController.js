@@ -2,6 +2,7 @@ const CurrentStatusModel = require("../../models/projectDetails/currentStatusMod
 const ProjectsModel = require("../../models/projects/projectsModel")
 const mongoose = require("mongoose");
 const path = require("path");
+const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const createStatus = async (req, res) => {
   try {
@@ -61,7 +62,7 @@ const createStatus = async (req, res) => {
         image: [
          {
            filename: path.basename(file.key),
-           filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "images/banners/..."
+           filepath: getCloudFrontUrl(file.key) // keep "images/banners/..."
           }
         ],
         alt: images.alt,
@@ -151,7 +152,7 @@ const updateStatus = async (req, res) => {
         imageData = [
           {
             filename: path.basename(s3Key),
-            filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${s3Key}`,
+            filepath: getCloudFrontUrl(s3Key),
           },
         ];
       }

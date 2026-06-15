@@ -3,6 +3,7 @@ const ProjectModel = require("../../models/projects/projectsModel");
 const path = require("path");
 const fs = require("fs");
 const mongoose = require("mongoose");
+const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const createSitePlan = async (req, res) => {
   try {
@@ -48,7 +49,7 @@ const createSitePlan = async (req, res) => {
      
       floorPlanData =  {
                  filename: path.basename(floorPlanFile.key), // "1756968423495-2.jpg"
-                 filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${floorPlanFile.key}` // keep "floor_plans/banners/..."
+                 filepath: getCloudFrontUrl(floorPlanFile.key) // keep "floor_plans/banners/..."
                 }
             }
     
@@ -69,7 +70,7 @@ const createSitePlan = async (req, res) => {
 
       unitPlanData =  {
                  filename: path.basename(unitPlanFile.key), // "1756968423495-2.jpg"
-                 filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${unitPlanFile.key}` // keep "floor_plans/banners/..."
+                 filepath: getCloudFrontUrl(unitPlanFile.key) // keep "floor_plans/banners/..."
                 }
     }
 
@@ -134,7 +135,7 @@ const updateSitePlan = async (req, res) => {
       updateData.floor_plan = [
         {
                          filename: path.basename(file.key), // "1756968423495-2.jpg"
-                         filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "floor_plans/banners/..."
+                         filepath: getCloudFrontUrl(file.key) // keep "floor_plans/banners/..."
                         }
       ];
     }
@@ -149,7 +150,7 @@ const updateSitePlan = async (req, res) => {
       updateData.unit_plan = [
         {
                          filename: path.basename(file.key), // "1756968423495-2.jpg"
-                         filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "floor_plans/banners/..."
+                         filepath: getCloudFrontUrl(file.key) // keep "floor_plans/banners/..."
                         }
       ];
     }

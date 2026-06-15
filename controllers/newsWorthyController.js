@@ -1,5 +1,6 @@
 const NewsWorthyMentionModel = require("../models/newsWorthyMentionModel")
 const path = require("path")
+const getCloudFrontUrl = require("../utils/getCloudFrontUrl");
 
 const createNewsWorthyMention = async (req, res) => {
   try {
@@ -22,7 +23,7 @@ const createNewsWorthyMention = async (req, res) => {
 
       imageData.push({
         filename: path.basename(file.key),
-        filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+        filepath: getCloudFrontUrl(file.key),
       });
     }
 
@@ -71,7 +72,7 @@ const updateNewsWorthyMention = async (req, res) => {
       existing.image = [
         {
           filename: path.basename(req.file.key),
-          filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${req.file.key}`,
+          filepath: getCloudFrontUrl(req.file.key),
         },
       ];
     }

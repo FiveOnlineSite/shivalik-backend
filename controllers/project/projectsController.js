@@ -13,6 +13,7 @@ const HighlightsModel = require("../../models/projectDetails/highlightsModel")
 const LocationModel = require("../../models/projectDetails/locationModel")
 const SitePlanModel = require("../../models/projectDetails/sitePlanModel")
 const mongoose = require("mongoose")
+const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const slugify = (str = "") =>
   str
@@ -66,7 +67,7 @@ const createProject = async (req, res) => {
 
       mainImage.push({
         filename: path.basename(file.key),
-        filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+        filepath: getCloudFrontUrl(file.key),
       });
     }
 
@@ -80,7 +81,7 @@ const createProject = async (req, res) => {
 
       banner.push({
         filename: path.basename(file.key),
-        filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+        filepath: getCloudFrontUrl(file.key),
       });
     }
 
@@ -94,7 +95,7 @@ const createProject = async (req, res) => {
 
       mobileBanner.push({
         filename: path.basename(file.key),
-        filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+        filepath: getCloudFrontUrl(file.key),
       });
     }
 
@@ -195,7 +196,7 @@ const updateProject = async (req, res) => {
       project.image = [
         {
           filename: req.files.image[0].filename,
-          filepath: req.files.image[0].location || req.files.image[0].path,
+          filepath: getCloudFrontUrl(req.files.image[0].key),
         },
       ];
     }
@@ -205,7 +206,7 @@ const updateProject = async (req, res) => {
       project.banner = [
         {
           filename: req.files.banner[0].filename,
-          filepath: req.files.banner[0].location || req.files.banner[0].path,
+          filepath: getCloudFrontUrl(req.files.banner[0].key),
         },
       ];
     } else if (removeBanner === "true") {
@@ -218,7 +219,7 @@ const updateProject = async (req, res) => {
       project.mobile_banner = [
         {
           filename: req.files.mobile_banner[0].filename,
-          filepath: req.files.mobile_banner[0].location || req.files.mobile_banner[0].path,
+          filepath: getCloudFrontUrl(req.files.mobile_banner[0].key),
         },
       ];
     } else if (removeMobileBanner === "true") {

@@ -1,5 +1,6 @@
 const TestimonialModel = require("../../models/home/testimonialsModel");
 const path = require("path");
+const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const createTestimonial = async (req, res) => {
   try {
@@ -45,7 +46,7 @@ const createTestimonial = async (req, res) => {
             fileType = isImage ? "image" : "video";
             testimonialData = {
                   filename: path.basename(file.key), 
-                  filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "images/testimonials/..."
+                  filepath: getCloudFrontUrl(file.key) // keep "images/testimonials/..."
                 };
 
     const totalTestimonials = await TestimonialModel.countDocuments();
@@ -122,7 +123,7 @@ const updateTestimonial = async (req, res) => {
       fileType = isImage ? "image" : "video";
       testimonialData = {
         filename: path.basename(file.key),
-        filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+        filepath: getCloudFrontUrl(file.key),
       };
     }
 

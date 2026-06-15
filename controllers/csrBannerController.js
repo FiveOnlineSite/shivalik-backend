@@ -1,5 +1,6 @@
 const CSRBannerModel = require("../models/csrBannerModel")
 const path = require("path")
+const getCloudFrontUrl = require("../utils/getCloudFrontUrl");
 
 const createCSRBanner = async (req, res) => {
   try {
@@ -24,7 +25,7 @@ const createCSRBanner = async (req, res) => {
 
       imageData =  {
                  filename: path.basename(imageFile.key), // "1756968423495-2.jpg"
-                 filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${imageFile.key}` // keep "images/banners/..."
+                 filepath: getCloudFrontUrl(imageFile.key) // keep "images/banners/..."
         }
     }
 
@@ -45,7 +46,7 @@ const createCSRBanner = async (req, res) => {
 
       mobileImageData =  {
                  filename: path.basename(mobielImageFile.key), // "1756968423495-2.jpg"
-                 filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${mobielImageFile.key}` // keep "images/banners/..."
+                 filepath: getCloudFrontUrl(mobielImageFile.key) // keep "images/banners/..."
                 }
     }
 
@@ -95,7 +96,7 @@ const updateCSRBanner = async (req, res) => {
       updateData.image = [
         {
                          filename: path.basename(file.key), // "1756968423495-2.jpg"
-                         filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "images/banners/..."
+                         filepath: getCloudFrontUrl(file.key) // keep "images/banners/..."
                         }
       ];
     }
@@ -109,7 +110,7 @@ const updateCSRBanner = async (req, res) => {
       updateData.mobile_image = [
         {
                          filename: path.basename(file.key), // "1756968423495-2.jpg"
-                         filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "images/banners/..."
+                         filepath: getCloudFrontUrl(file.key) // keep "images/banners/..."
                         }
       ];
     }

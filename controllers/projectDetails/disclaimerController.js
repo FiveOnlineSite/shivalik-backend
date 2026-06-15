@@ -2,6 +2,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const ProjectsModel = require("../../models/projects/projectsModel");
 const DisclaimerModel = require("../../models/projectDetails/disclaimerModel");
+const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const createDisclaimer = async (req, res) => {
   try {
@@ -11,7 +12,6 @@ const createDisclaimer = async (req, res) => {
         console.log("project id", project, typeof project);
     
         const projectExist = await ProjectsModel.findById(project);
-    
 
         if (!projectExist) {
               return res.status(400).json({ message: "project not found" });
@@ -38,7 +38,7 @@ const createDisclaimer = async (req, res) => {
 
       qrData = {
                               filename: path.basename(file.key), // "1756968423495-2.jpg"
-                              filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "qrs/banners/..."
+                              filepath: getCloudFrontUrl(file.key) // keep "qrs/banners/..."
                              }
     }
 
@@ -98,7 +98,7 @@ const updateDisclaimer = async (req, res) => {
       disclaimer.qr = [
        {
                                filename: path.basename(file.key), // "1756968423495-2.jpg"
-                               filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "qrs/banners/..."
+                               filepath: getCloudFrontUrl(file.key) // keep "qrs/banners/..."
                               }
       ];
     }

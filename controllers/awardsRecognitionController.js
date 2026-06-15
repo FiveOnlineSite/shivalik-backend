@@ -1,5 +1,6 @@
 const AwardsModel = require("../models/awardsRecognitionModel");
 const path = require("path")
+const getCloudFrontUrl = require("../utils/getCloudFrontUrl");
 
 const createAward = async (req, res) => {
   try {
@@ -22,7 +23,7 @@ const createAward = async (req, res) => {
 
     const imageData = {
       filename: path.basename(file.key),
-      filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+      filepath: getCloudFrontUrl(file.key),
     };
 
     const newAward = new AwardsModel({
@@ -65,7 +66,7 @@ const updateAward = async (req, res) => {
       existingAward.image = [
         {
           filename: path.basename(file.key),
-          filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+          filepath: getCloudFrontUrl(file.key),
         },
       ];
     }

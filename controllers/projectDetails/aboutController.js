@@ -3,6 +3,7 @@ const ProjectModel = require("../../models/projects/projectsModel");
 const path = require("path");
 const fs = require("fs");
 const mongoose = require("mongoose");
+const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const createAbout = async (req, res) => {
   try {
@@ -44,7 +45,7 @@ const createAbout = async (req, res) => {
      
       imageData =  {
                  filename: path.basename(imageFile.key), // "1756968423495-2.jpg"
-                 filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${imageFile.key}` // keep "images/banners/..."
+                 filepath: getCloudFrontUrl(imageFile.key) // keep "images/banners/..."
                 }
             }
     
@@ -59,7 +60,7 @@ const createAbout = async (req, res) => {
 
       brochureData =  {
                  filename: path.basename(brochureFile.key), // "1756968423495-2.jpg"
-                 filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${brochureFile.key}` // keep "images/banners/..."
+                 filepath: getCloudFrontUrl(brochureFile.key) // keep "images/banners/..."
                 }
     }
 
@@ -122,7 +123,7 @@ const updateAbout = async (req, res) => {
       updateData.image = [
         {
           filename: path.basename(file.key),
-          filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+          filepath: getCloudFrontUrl(file.key),
         },
       ];
     }
@@ -138,7 +139,7 @@ const updateAbout = async (req, res) => {
       updateData.brochure = [
         {
           filename: path.basename(file.key),
-          filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}`,
+          filepath: getCloudFrontUrl(file.key),
         },
       ];
     }

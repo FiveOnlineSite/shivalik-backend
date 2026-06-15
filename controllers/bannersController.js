@@ -1,5 +1,6 @@
 const BannerModel = require("../models/bannersModel")
 const path = require("path")
+const getCloudFrontUrl = require("../utils/getCloudFrontUrl");
 
 const createBanner = async (req, res) => {
 
@@ -25,7 +26,7 @@ const createBanner = async (req, res) => {
 
       imageData =  {
                  filename: path.basename(imageFile.key), // "1756968423495-2.jpg"
-                 filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${imageFile.key}` // keep "images/banners/..."
+                 filepath: getCloudFrontUrl(imageFile.key) // keep "images/banners/..."
         }
     }
 
@@ -46,7 +47,7 @@ const createBanner = async (req, res) => {
 
       mobileImageData =  {
                  filename: path.basename(mobielImageFile.key), // "1756968423495-2.jpg"
-                 filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${mobielImageFile.key}` // keep "images/banners/..."
+                 filepath: getCloudFrontUrl(mobielImageFile.key) // keep "images/banners/..."
                 }
     }
 
@@ -100,7 +101,7 @@ const updateBanner = async (req, res) => {
       updateData.image = [
         {
                          filename: path.basename(file.key), // "1756968423495-2.jpg"
-                         filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "images/banners/..."
+                         filepath: getCloudFrontUrl(file.key) // keep "images/banners/..."
                         }
       ];
     }
@@ -114,7 +115,7 @@ const updateBanner = async (req, res) => {
       updateData.mobile_image = [
         {
                          filename: path.basename(file.key), // "1756968423495-2.jpg"
-                         filepath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${file.key}` // keep "images/banners/..."
+                         filepath: getCloudFrontUrl(file.key) // keep "images/banners/..."
                         }
       ];
     }
