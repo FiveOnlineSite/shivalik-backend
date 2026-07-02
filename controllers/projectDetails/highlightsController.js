@@ -6,7 +6,7 @@ const getCloudFrontUrl = require("../../utils/getCloudFrontUrl");
 
 const createHighlight = async (req, res) => {
   try {
-    const { title, alt } = req.body;
+    const { title, alt, disclaimer } = req.body;
 
     const { project } = req.body;
         console.log("project id", project, typeof project);
@@ -35,6 +35,7 @@ const createHighlight = async (req, res) => {
       alt,
       title,
       project,
+      disclaimer: req.body.disclaimer || "", // Add disclaimer field
     });
 
     await newHighlight.save();
@@ -52,7 +53,7 @@ const createHighlight = async (req, res) => {
 
 const updateHighlight = async (req, res) => {
   try {
-    const { alt, title, project } = req.body;
+    const { alt, title, project, disclaimer } = req.body;
 
     const HighlightId = req.params._id;
 
@@ -93,6 +94,8 @@ const updateHighlight = async (req, res) => {
 
      if (alt !== undefined) Highlight.alt = alt;
     if (title !== undefined) Highlight.title = title;
+    if (disclaimer !== undefined) Highlight.disclaimer = disclaimer;
+
     await Highlight.save();
 
     return res.status(200).json({

@@ -19,6 +19,9 @@ const HightlightsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+   disclaimer: {
+    type: String,
+  },
 });
 
 const HightlightsModel = mongoose.model("hightlights", HightlightsSchema);
