@@ -12,6 +12,19 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 8000;
 
+// ✅ Redirect trailing slash URLs first
+app.use((req, res, next) => {
+  if (req.path.length > 1 && req.path.endsWith("/")) {
+    const query = req.url.slice(req.path.length);
+    const cleanPath = req.path.slice(0, -1);
+
+    return res.redirect(301, cleanPath + query);
+  }
+
+  next();
+});
+
+
 app.use(cors());
 
 app.use((req, res, next) => {
@@ -38,7 +51,7 @@ app.use((req, res, next) => {
 connectDb();
 
 app.get("/api", (req, res) => {
-  res.send("This is new version");
+  res.send("Shivalik API is running");
 });
 
 app.get("/debug-env", (req, res) => {
