@@ -3,10 +3,12 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const express = require("express");
+const compression = require("compression");
 const connectDb = require("./config/db");
 const Route = require("./routes/index");
 const cors = require("cors");
 const app = express();
+app.use(compression());
 app.use(express.json());
 
 
@@ -34,6 +36,16 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
+  next();
+});
+
+// Let browsers revalidate (304) instead of re-downloading unchanged GET
+// responses. "no-cache" forces revalidation on every use, so admin edits
+// are never served stale — it just skips the body on unchanged GET requests, works with the ETag express already sets.
+app.use((req, res, next) => {
+  if (req.method === "GET") {
+    res.set("Cache-Control", "public, no-cache");
+  }
   next();
 });
 

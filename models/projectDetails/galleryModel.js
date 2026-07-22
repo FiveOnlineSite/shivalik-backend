@@ -6,6 +6,7 @@ const GallerySchema = new mongoose.Schema({
    type: mongoose.Types.ObjectId,
     ref: "projects",
     required: true,
+    index: true,
   },
   image: {
     type: Array,

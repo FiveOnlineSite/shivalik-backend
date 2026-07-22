@@ -112,16 +112,24 @@ const getGalleriesByProject = async (req, res) => {
       str?.toLowerCase()
         .trim()
         .replace(/&/g, "and")
-        .replace(/['’]/g, "")  
+        .replace(/['’]/g, "")
         .replace(/\//g, "-")
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "");
 
-    const Gallery = await GalleriesModel.find().populate("project", "title");
+    // Slugs aren't stored, so resolve the project first from a lightweight
+    // title-only scan, then query galleries directly by that project's _id
+    // instead of fetching+populating every gallery in the collection.
+    const titles = await ProjectsModel.find({}, "title").lean();
+    const matchedProject = titles.find((p) => normalize(p.title) === normalize(name));
 
-    const Galleries = Gallery.filter(
-      (a) => normalize(a.project?.title) === normalize(name)
-    );
+    if (!matchedProject) {
+      return res.status(404).json({ message: "No Galleries found for this project" });
+    }
+
+    const Galleries = await GalleriesModel.find({ project: matchedProject._id })
+      .populate("project", "title")
+      .lean();
 
     if (!Galleries || Galleries.length === 0) {
       return res.status(404).json({ message: "No Galleries found for this project" });

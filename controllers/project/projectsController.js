@@ -297,23 +297,17 @@ const getBannersByProject = async (req, res) => {
   try {
     const paramSlug = slugify(req.params.name || "");
 
-    const banners = await ProjectsModel.find();
+    // Slugs aren't stored in the DB, so we still need to compare against
+    // every title — but only pull the _id/title needed to find the match,
+    // not the full document (images, meta fields, etc.) for every project.
+    const titles = await ProjectsModel.find({}, "title").lean();
+    const matched = titles.find((b) => slugify(b.title) === paramSlug);
 
-    console.log("paramSlug:", paramSlug);
-
-    banners.forEach((b) =>
-      console.log("db title:", JSON.stringify(b.title), "=>", slugify(b.title))
-    );
-
-    const matchedbanner = banners.find(
-      (b) => slugify(b.title) === paramSlug
-    );
-
-    console.log("paramSlug1:", paramSlug);
-
-    if (!matchedbanner) {
+    if (!matched) {
       return res.status(404).json({ message: "banner not found" });
     }
+
+    const matchedbanner = await ProjectsModel.findById(matched._id).lean();
 
     res.status(200).json({
       message: "banner fetched successfully",
@@ -328,7 +322,7 @@ const getBannersByProject = async (req, res) => {
 
 const getProject = async (req, res) => {
   try {
-    const Project = await ProjectsModel.findById(req.params._id);
+    const Project = await ProjectsModel.findById(req.params._id).lean();
 
     if (!Project) {
       return res.status(400).json({
@@ -350,7 +344,8 @@ const getProjects = async (req, res) => {
   try {
     const Projects = await ProjectsModel
       .find()
-      .sort({ project_category: 1, sequence: 1 });
+      .sort({ project_category: 1, sequence: 1 })
+      .lean();
 
     if (Projects.length === 0) {
       return res.status(400).json({
